@@ -1,4 +1,5 @@
 mod cli;
+mod wallpaper;
 
 use cli::arguments;
 use cli::output;
@@ -12,5 +13,7 @@ pub fn run() {
         process::exit(output::EXIT_MISSING_ARGUMENTS);
     }
     arguments::parse_arguments(args);
+    wallpaper::manager::set_wallpaper();
+
     process::exit(output::EXIT_OK);
 }
