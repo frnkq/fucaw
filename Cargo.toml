@@ -1,4 +1,4 @@
 [package]
-name = "fucaw - Frequently Used Commands as Wallpaper"
+name = "fucaw"
 version = "0.1.0"
-edition = "2022"
+edition = "2021"
