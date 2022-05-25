@@ -14,12 +14,9 @@ impl Arguments {
     }
 }
 
-pub fn parse_arguments(args: Vec<String>) -> Option<Arguments> {
-    if args.len() < 2 {
-        return None;
-    }
+pub fn parse_arguments(args: Vec<String>) -> Arguments {
     let arguments = Arguments::new(&args);
-    return Some(arguments);
+    return arguments;
 }
 
 #[cfg(test)]
@@ -31,15 +28,8 @@ mod tests {
             String::from("/path/of/binary"),
             String::from("/path/of/image"),
         ];
-        let arguments = parse_arguments(args.to_vec()).unwrap();
+        let arguments = parse_arguments(args.to_vec());
         assert_eq!(args[0], arguments.command_path);
         assert_eq!(args[1], arguments.image_path);
-    }
-
-    #[test]
-    fn should_return_none_if_less_than_two_arguments() {
-        let args = [String::from("/path/of/executable")];
-        let arguments = parse_arguments(args.to_vec());
-        assert_eq!(arguments.is_some(), false);
     }
 }
