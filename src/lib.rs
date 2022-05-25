@@ -1,11 +1,13 @@
-mod command_line;
-pub use std::env;
-pub use crate::command_line::arguments;
+mod cli;
 
-pub fn run () {
-    let arguments = arguments::parse_arguments(env::args().collect());
-    println!("{:?}", arguments);
+use cli::arguments;
+use cli::output;
+use std::env;
+
+pub fn run() {
+    let args: Vec<String> = env::args().collect();
+    if args.len() < 2 {
+        output::print_help();
+    }
+    arguments::parse_arguments(args);
 }
-
-
-
