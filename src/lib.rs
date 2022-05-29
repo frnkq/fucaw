@@ -2,6 +2,7 @@ mod cli;
 mod wallpaper;
 
 use cli::arguments;
+use cli::commands;
 use cli::output;
 use std::env;
 use std::process;
@@ -14,7 +15,9 @@ pub fn run() {
         process::exit(output::EXIT_MISSING_ARGUMENTS);
     }
     let args = arguments::parse_arguments(args);
-    wallmanager::set_wallpaper(&args.image_path);
+    let bash_history = commands::read_history_file("/home/frnkq/.bash_history");
+    println!("{:?}", bash_history);
 
+    wallmanager::set_wallpaper(&args.image_path);
     process::exit(output::EXIT_OK);
 }
