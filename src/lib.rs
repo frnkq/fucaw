@@ -14,9 +14,10 @@ pub fn run() {
         output::print_help();
         process::exit(output::EXIT_MISSING_ARGUMENTS);
     }
-    let args = arguments::parse_arguments(args);
-    let bash_history = commands::read_terminal_history();
+    let commands = commands::frequently_used();
+    println!("{:?}", commands);
 
+    let args = arguments::parse_arguments(args);
     wallmanager::set_wallpaper(&args.image_path);
     process::exit(output::EXIT_OK);
 }
