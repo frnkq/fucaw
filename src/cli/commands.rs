@@ -21,18 +21,23 @@ pub fn read_terminal_history() -> Result<String> {
 pub fn filter_commands(history: String) -> Vec<String> {
     let mut commands: Vec<String> = history
         .split("\n")
-        .map(|s| s.to_string())
-        .map(|s| s.split(" ").next().unwrap().to_string())
+        .map(|cmd| cmd.split(" ").next().unwrap().to_string())
         .collect();
 
     commands.sort();
     commands.dedup();
 
+    // let mut freq: Vec<Cmd> = vec![];
+    // for command in commands {
+    //     if get_index_of(&command, &freq) != -1 {
+    //         freq.push(command);
+    //     }
+    // }
+
     if commands.len() > MAX_NUMBER_OF_COMMANDS {
         commands.resize_with(MAX_NUMBER_OF_COMMANDS, Default::default)
     }
 
-    print!("{:?}", commands);
     return commands;
 }
 
@@ -46,11 +51,11 @@ pub fn frequently_used() -> Option<Vec<String>> {
     }
 }
 
-fn get_index_of(element: Cmd, in_vector: &Vec<Cmd>) -> i32 {
+fn get_index_of(command: &Cmd, in_vector: &Vec<Cmd>) -> i32 {
     let mut i = 0;
     let mut index: i32 = -1;
     for el in in_vector.iter() {
-        if el.command == element.command {
+        if el.command == command.command {
             index = i;
             break;
         }
@@ -101,6 +106,6 @@ mod tests {
                 return cmd;
             })
             .collect();
-        assert_eq!(2, get_index_of(command, &vec));
+        assert_eq!(2, get_index_of(&command, &vec));
     }
 }
