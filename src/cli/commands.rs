@@ -4,6 +4,12 @@ use std::process::Command;
 const HISTORY_FILE_PATH: &str = "/home/frnkq/.bash_history";
 const MAX_NUMBER_OF_COMMANDS: usize = 10;
 
+#[derive(Debug, Clone)]
+struct Cmd {
+    command: String,
+    occurrence: i32,
+}
+
 pub fn read_terminal_history() -> Result<String> {
     let history = Command::new("cat").arg(HISTORY_FILE_PATH).output();
     match history.is_ok() {
@@ -40,6 +46,19 @@ pub fn frequently_used() -> Option<Vec<String>> {
     }
 }
 
+fn get_index_of(element: Cmd, in_vector: &Vec<Cmd>) -> i32 {
+    let mut i = 0;
+    let mut index: i32 = -1;
+    for el in in_vector.iter() {
+        if el.command == element.command {
+            index = i;
+            break;
+        }
+        i += 1;
+    }
+    return index;
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -65,13 +84,23 @@ mod tests {
     }
 
     #[test]
-    fn sorts_by_occurrences() {
-        let commands = String::from("commandA\ncommandB\ncommandC\ncommandA\ncommandA\ncommandC");
-        let expected: Vec<String> = String::from("commandA\ncommandC\ncommandB")
-            .split("\n")
-            .map(|s| s.to_string())
-            .collect();
+    fn gets_index_of_cmd_in_vec() {
+        let commands_str: String = String::from("commandA\ncommandB\ncommandC\ncommandB\n");
+        let command = Cmd {
+            command: String::from("commandC"),
+            occurrence: 0,
+        };
 
-        assert_eq!(expected, filter_commands(commands));
+        let vec: Vec<Cmd> = commands_str
+            .split("\n")
+            .map(|c| {
+                let cmd = Cmd {
+                    command: c.to_string(),
+                    occurrence: 1,
+                };
+                return cmd;
+            })
+            .collect();
+        assert_eq!(2, get_index_of(command, &vec));
     }
 }
