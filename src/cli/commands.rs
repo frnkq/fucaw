@@ -13,13 +13,20 @@ pub fn read_terminal_history() -> Result<String> {
 }
 
 pub fn filter_commands(history: String) -> Vec<String> {
-    let mut commands: Vec<String> = history.split("\n").map(|s| s.to_string()).collect();
-    commands.reverse();
+    let mut commands: Vec<String> = history
+        .split("\n")
+        .map(|s| s.to_string())
+        .map(|s| s.split(" ").next().unwrap().to_string())
+        .collect();
+
+    commands.sort();
+    commands.dedup();
 
     if commands.len() > MAX_NUMBER_OF_COMMANDS {
         commands.resize_with(MAX_NUMBER_OF_COMMANDS, Default::default)
     }
 
+    print!("{:?}", commands);
     return commands;
 }
 
@@ -47,5 +54,24 @@ mod tests {
     fn gets_max_number_of_commands_or_less() {
         let command_lines = frequently_used().unwrap();
         assert_eq!(true, command_lines.len() <= MAX_NUMBER_OF_COMMANDS);
+    }
+
+    #[test]
+    fn filters_duplicate_commands() {
+        let commands = String::from("commandA\ncommandB\ncommandC\ncommandB\ncommandC\ncommandB");
+        let command_lines: String = filter_commands(commands).into_iter().collect();
+        assert_eq!(1, command_lines.matches("commandB").count());
+        assert_eq!(1, command_lines.matches("commandC").count());
+    }
+
+    #[test]
+    fn sorts_by_occurrences() {
+        let commands = String::from("commandA\ncommandB\ncommandC\ncommandA\ncommandA\ncommandC");
+        let expected: Vec<String> = String::from("commandA\ncommandC\ncommandB")
+            .split("\n")
+            .map(|s| s.to_string())
+            .collect();
+
+        assert_eq!(expected, filter_commands(commands));
     }
 }
