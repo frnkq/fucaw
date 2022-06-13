@@ -2,6 +2,10 @@ use std::io::Result;
 use std::process::Command;
 use std::process::ExitStatus;
 
+pub fn create_image(image_path: &str) {
+
+}
+
 pub fn set_wallpaper(img_path: &str) -> Result<ExitStatus> {
     return Command::new("feh").arg("--bg-fill").arg(img_path).status();
 }
@@ -21,5 +25,12 @@ mod tests {
             let output = set_wallpaper(img_path);
             assert_eq!(true, output.is_ok())
         }
+    }
+
+    #[test]
+    fn creates_image(){
+        let image_path: &str = "/tmp/fucaw.png";
+        create_image(image_path);
+        assert_eq!(true, std::path::Path::new(image_path).is_file());
     }
 }
