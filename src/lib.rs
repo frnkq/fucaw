@@ -15,7 +15,7 @@ pub fn run() {
         process::exit(output::EXIT_MISSING_ARGUMENTS);
     }
     let commands = commands::frequently_used();
-    // println!("{:?}", commands);
+    println!("{:?}", commands);
 
     let args = arguments::parse_arguments(args);
     wallmanager::set_wallpaper(&args.image_path);

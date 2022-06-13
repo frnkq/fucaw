@@ -5,7 +5,7 @@ const HISTORY_FILE_PATH: &str = "/home/frnkq/.bash_history";
 const MAX_NUMBER_OF_COMMANDS: usize = 25;
 
 #[derive(Debug, Clone)]
-struct Cmd {
+pub struct Cmd {
     command: String,
     occurrence: i32,
 }
@@ -24,15 +24,10 @@ pub fn read_terminal_history() -> Result<String> {
     }
 }
 
-pub fn filter_commands(history: String) -> Vec<String> {
-    let mut commands: Vec<String> = history
-        .split("\n")
-        .map(|cmd| cmd.split(" ").next().unwrap().to_string())
-        .collect();
-
+pub fn filter_commands(history: Vec<String>) -> Vec<Cmd> {
     let mut freq: Vec<Cmd> = vec![];
 
-    for command in commands {
+    for command in history {
         let cmd = Cmd { 
             command: command,
             occurrence: 0
@@ -52,18 +47,22 @@ pub fn filter_commands(history: String) -> Vec<String> {
     if freq.len() > MAX_NUMBER_OF_COMMANDS {
         freq.resize_with(MAX_NUMBER_OF_COMMANDS, Default::default)
     }
-    println!("{:?}", freq);
 
-    return freq.iter().map(|f| f.command.to_string()).collect();
+
+    return freq;
 }
 
-pub fn frequently_used() -> Option<Vec<String>> {
+pub fn frequently_used() -> Option<Vec<Cmd>> {
     let history = read_terminal_history().unwrap();
 
     if history.is_empty() {
         None
     } else {
-        Some(filter_commands(history))
+        let commands: Vec<String> = history
+            .split("\n")
+            .map(|cmd| cmd.split(" ").next().unwrap().to_string())
+            .collect();
+        Some(filter_commands(commands))
     }
 }
 
@@ -98,8 +97,11 @@ mod tests {
 
     #[test]
     fn filters_duplicate_commands() {
-        let commands = String::from("commandA\ncommandB\ncommandC\ncommandB\ncommandC\ncommandB");
-        let command_lines: String = filter_commands(commands).into_iter().collect();
+        let commands = String::from("commandA\ncommandB\ncommandC\ncommandB\ncommandC\ncommandB")
+            .split("\n")
+            .map(|cmd| cmd.split(" ").next().unwrap().to_string())
+            .collect();
+        let command_lines: String = filter_commands(commands).into_iter().map(|cmd| cmd.command.to_string()).collect();
         assert_eq!(1, command_lines.matches("commandB").count());
         assert_eq!(1, command_lines.matches("commandC").count());
     }
