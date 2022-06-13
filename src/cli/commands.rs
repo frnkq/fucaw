@@ -2,12 +2,18 @@ use std::io::Result;
 use std::process::Command;
 
 const HISTORY_FILE_PATH: &str = "/home/frnkq/.bash_history";
-const MAX_NUMBER_OF_COMMANDS: usize = 10;
+const MAX_NUMBER_OF_COMMANDS: usize = 25;
 
 #[derive(Debug, Clone)]
 struct Cmd {
     command: String,
     occurrence: i32,
+}
+
+impl Default for Cmd {
+   fn default()-> Self {
+    Self { command: Default::default(), occurrence: Default::default()}
+   }
 }
 
 pub fn read_terminal_history() -> Result<String> {
@@ -24,21 +30,31 @@ pub fn filter_commands(history: String) -> Vec<String> {
         .map(|cmd| cmd.split(" ").next().unwrap().to_string())
         .collect();
 
-    commands.sort();
-    commands.dedup();
+    let mut freq: Vec<Cmd> = vec![];
 
-    // let mut freq: Vec<Cmd> = vec![];
-    // for command in commands {
-    //     if get_index_of(&command, &freq) != -1 {
-    //         freq.push(command);
-    //     }
-    // }
+    for command in commands {
+        let cmd = Cmd { 
+            command: command,
+            occurrence: 0
+        };
 
-    if commands.len() > MAX_NUMBER_OF_COMMANDS {
-        commands.resize_with(MAX_NUMBER_OF_COMMANDS, Default::default)
+        let index: usize = get_index_of(&cmd, &freq);
+        if index == 0 {
+            freq.push(cmd);
+        } else {
+            freq[index].occurrence += 1;
+        }
     }
 
-    return commands;
+    freq.sort_by(|a,b| b.occurrence.cmp(&a.occurrence));
+
+
+    if freq.len() > MAX_NUMBER_OF_COMMANDS {
+        freq.resize_with(MAX_NUMBER_OF_COMMANDS, Default::default)
+    }
+    println!("{:?}", freq);
+
+    return freq.iter().map(|f| f.command.to_string()).collect();
 }
 
 pub fn frequently_used() -> Option<Vec<String>> {
@@ -51,9 +67,9 @@ pub fn frequently_used() -> Option<Vec<String>> {
     }
 }
 
-fn get_index_of(command: &Cmd, in_vector: &Vec<Cmd>) -> i32 {
+fn get_index_of(command: &Cmd, in_vector: &Vec<Cmd>) -> usize {
     let mut i = 0;
-    let mut index: i32 = -1;
+    let mut index: usize = 0;
     for el in in_vector.iter() {
         if el.command == command.command {
             index = i;
