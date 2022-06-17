@@ -1,11 +1,11 @@
 use std::io::Result;
 use std::process::Command;
 use std::process::ExitStatus;
+use image::{ImageBuffer, RgbImage};
 
 pub fn create_image(image_path: &str) {
-    let mut imgbuf = image::ImageBuffer::new(800, 800);
-
-    imgbuf.save("/tmp/fucaw.png");
+    let imgbuff: RgbImage = ImageBuffer::new(800, 800);
+    imgbuff.save(image_path);
 }
 
 pub fn set_wallpaper(img_path: &str) -> Result<ExitStatus> {
