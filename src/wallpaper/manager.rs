@@ -3,7 +3,9 @@ use std::process::Command;
 use std::process::ExitStatus;
 
 pub fn create_image(image_path: &str) {
+    let mut imgbuf = image::ImageBuffer::new(800, 800);
 
+    imgbuf.save("/tmp/fucaw.png");
 }
 
 pub fn set_wallpaper(img_path: &str) -> Result<ExitStatus> {

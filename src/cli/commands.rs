@@ -1,4 +1,3 @@
-use std::io::Result;
 use std::process::Command;
 
 const HISTORY_FILE_PATH: &str = "/home/frnkq/.bash_history";
@@ -16,11 +15,11 @@ impl Default for Cmd {
    }
 }
 
-pub fn read_terminal_history() -> Result<String> {
+pub fn read_terminal_history() -> Option<String> {
     let history = Command::new("cat").arg(HISTORY_FILE_PATH).output();
     match history.is_ok() {
-        true => Ok(String::from_utf8(history.unwrap().stdout).unwrap()),
-        false => Ok(String::from("")),
+        true => Some(String::from_utf8(history.unwrap().stdout).unwrap()),
+        false => None,
     }
 }
 
@@ -33,50 +32,43 @@ pub fn filter_commands(history: Vec<String>) -> Vec<Cmd> {
             occurrence: 0
         };
 
-        let index: usize = get_index_of(&cmd, &freq);
-        if index == 0 {
-            freq.push(cmd);
-        } else {
-            freq[index].occurrence += 1;
+        match get_index_of(&cmd, &freq) {
+            Some(index) =>  freq[index].occurrence += 1,
+            None => freq.push(cmd)
         }
     }
 
     freq.sort_by(|a,b| b.occurrence.cmp(&a.occurrence));
 
-
     if freq.len() > MAX_NUMBER_OF_COMMANDS {
         freq.resize_with(MAX_NUMBER_OF_COMMANDS, Default::default)
     }
-
 
     return freq;
 }
 
 pub fn frequently_used() -> Option<Vec<Cmd>> {
-    let history = read_terminal_history().unwrap();
-
-    if history.is_empty() {
-        None
-    } else {
-        let commands: Vec<String> = history
-            .split("\n")
-            .map(|cmd| cmd.split(" ").next().unwrap().to_string())
-            .collect();
-        Some(filter_commands(commands))
+    match read_terminal_history() {
+        Some(history) => {
+            let commands: Vec<String> = history
+                .split("\n")
+                .map(|cmd| cmd.split(" ").next().unwrap().to_string())
+                .collect();
+            Some(filter_commands(commands))
+        },
+        None => None
     }
 }
 
-fn get_index_of(command: &Cmd, in_vector: &Vec<Cmd>) -> usize {
-    let mut i = 0;
+fn get_index_of(command: &Cmd, in_vector: &Vec<Cmd>) -> Option<usize> {
     let mut index: usize = 0;
     for el in in_vector.iter() {
         if el.command == command.command {
-            index = i;
-            break;
+            return Some(index);
         }
-        i += 1;
+        index +=1;
     }
-    return index;
+    return None;
 }
 
 #[cfg(test)]
@@ -124,6 +116,6 @@ mod tests {
                 return cmd;
             })
             .collect();
-        assert_eq!(2, get_index_of(&command, &vec));
+        assert_eq!(2, get_index_of(&command, &vec).unwrap());
     }
 }
