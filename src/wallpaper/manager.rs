@@ -3,6 +3,9 @@ use std::process::Command;
 use std::process::ExitStatus;
 
 pub fn set_wallpaper(img_path: &str) -> Result<ExitStatus> {
+    //receive img (see return type of wallcreator
+    //get it's path? if no path, persist it
+    //
     return Command::new("feh").arg("--bg-fill").arg(img_path).status();
 }
 

@@ -1,9 +1,10 @@
 use image::{RgbImage, ImageError };
 
-pub fn create_image(image_path: &str)->Result<(), ImageError> {
+pub fn create_wallpaper(source_image_path: &str)->Result<&str, ImageError> {
+    let new_path = "/tmp/newpath.png";
     let imgbuff: RgbImage = RgbImage::new(300, 300);
-    match imgbuff.save(image_path){
-        Ok(img) => return Ok(img),
+    match imgbuff.save(new_path){
+        Ok(_img) => return Ok(new_path),
         Err(e) => return Err(e)
     };
 }

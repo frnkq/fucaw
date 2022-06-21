@@ -20,8 +20,7 @@ pub fn run() {
     println!("{:?}", commands);
 
     let args = arguments::parse_arguments(args);
-    let image = wallcreator::create_image(&args.image_path);
-    wallmanager::set_wallpaper(&args.image_path);
-
+    let wall_path = wallcreator::create_wallpaper(&args.source_image_path).unwrap();
+    wallmanager::set_wallpaper(wall_path).unwrap();
     process::exit(output::EXIT_OK);
 }

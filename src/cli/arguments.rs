@@ -1,11 +1,11 @@
 pub struct Arguments {
-    pub image_path: String,
+    pub source_image_path: String,
 }
 
 impl Arguments {
     pub fn new(args: &[String]) -> Arguments {
-        let image_path = String::from(args[1].clone());
-        return Arguments { image_path };
+        let source_image_path = String::from(args[1].clone());
+        return Arguments { source_image_path };
     }
 }
 
@@ -24,6 +24,6 @@ mod tests {
             String::from("/path/of/image"),
         ];
         let arguments = parse_arguments(args.to_vec());
-        assert_eq!(args[1], arguments.image_path);
+        assert_eq!(args[1], arguments.source_image_path);
     }
 }
